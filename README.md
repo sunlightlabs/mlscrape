@@ -1,0 +1,2 @@
+# mlscrape
+mlscrape is a library for site-specific automated website scraping based on human-annotated examples. It contains two types of models: one for learning to distinguish between pages of interest and uninteresting pages, and one for identifying elements of interest within target pages. It works best for websites where there are good clues in the DOM that both distinguish between interesting and uninteresting pages, and between interesting and uninteresting DOM nodes.

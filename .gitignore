@@ -1,0 +1,4 @@
+*.pyc
+*.db
+*.db-journal
+_test_*

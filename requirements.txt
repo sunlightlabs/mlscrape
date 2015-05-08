@@ -1,0 +1,7 @@
+html2text
+requests
+gevent
+scrapelib
+lxml
+-e git+https://github.com/seomoz/url-py.git#egg=url-0.1.2dev
+git+https://github.com/2shou/TextGrocery.git
