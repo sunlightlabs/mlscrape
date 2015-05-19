@@ -53,7 +53,7 @@ def _features_for_node(node, page_features):
     return node_features
 
 def _response_to_features(response, xpaths_and_labels=None):
-    tree = etree.HTML(response.content)
+    tree = etree.HTML(response.text)
     
     if xpaths_and_labels:
         for xpath, label in xpaths_and_labels:

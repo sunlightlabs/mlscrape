@@ -7,7 +7,7 @@ whitespace = re.compile('\s+')
 
 def _response_to_features(response):
     features = set()
-    tree = etree.HTML(response.content)
+    tree = etree.HTML(response.text)
 
     for item in tree.iter(tag=etree.Element):
         features.add("tag-%s" % item.tag)
