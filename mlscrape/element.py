@@ -1,4 +1,4 @@
-import requests, re, urlparse, uuid, copy, html2text
+import requests, re, urlparse, uuid, copy, html2text, itertools
 import url as moz_url
 from lxml import etree
 from collections import defaultdict
@@ -90,7 +90,7 @@ class ElementClassifier(Grocery):
     def train(self):
         super(ElementClassifier, self).train([(node['label'], " ".join(node['features'])) for node in self._training_data])
 
-    def extract(self, response):
+    def extract(self, response, format="text"):
         out_data = defaultdict(list)
 
         features_list = _response_to_features(response)
@@ -98,7 +98,17 @@ class ElementClassifier(Grocery):
         for node in features_list:
             prediction = str(self.predict(" ".join(node['features'])))
             if prediction != NONE_LABEL:
-                text =  html2text.html2text(etree.tostring(node['node'])).strip()
+                if format == "text":
+                    text =  html2text.html2text(etree.tostring(node['node'])).strip()
+                else:
+                    # strip the stuff we've tacked onto the dom
+                    element = copy.deepcopy(node['node'])
+                    for child in element.iter(tag=etree.Element):
+                        child.attrib.pop('node-label', None)
+                        child.attrib.pop('node-uuid', None)
+
+                    # do the equivalent of an innerHTML operation
+                    text = stringify_children(element)
                 if text:
                     out_data[prediction].append(text)
 
@@ -122,3 +132,11 @@ class ElementClassifier(Grocery):
                 })
 
         return out_data
+
+# from http://stackoverflow.com/questions/4624062/get-all-text-inside-a-tag-in-lxml
+def stringify_children(node):
+    parts = ([node.text] +
+            list(itertools.chain(*([c.text, etree.tostring(c), c.tail] for c in node.getchildren()))) +
+            [node.tail])
+    # filter removes possible Nones in texts and tails
+    return ''.join(filter(None, parts))
